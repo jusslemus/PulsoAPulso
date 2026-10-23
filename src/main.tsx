@@ -1,8 +1,9 @@
 import { StrictMode, useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import confetti from 'canvas-confetti';
+import 'animate.css';
 import {
-  ArrowLeft, ArrowRight, Award, Check, Clock3, Heart, Info, RotateCcw,
+  ArrowLeft, ArrowRight, Award, Check, Clock3, Cloud, Crown, Heart, Info, RotateCcw,
   Sparkles, Trophy, UserRound, X, Zap,
 } from 'lucide-react';
 import './styles.css';
@@ -104,12 +105,23 @@ function ResultsView({ players, onRematch, onReset }: { players: Player[]; onRem
   const tie = players[0].score === players[1].score;
   const winner = tie ? null : players[0].score > players[1].score ? players[0] : players[1];
   const loser = tie ? null : players[0].score > players[1].score ? players[1] : players[0];
-  useEffect(() => { void confetti({ particleCount: 150, spread: 90, origin: { y: 0.55 }, colors: ['#fbbf24', '#ee3445', '#ffffff', '#1e8791'] }); }, []);
-  return <main className="results-page"><div className="result-glow"></div><header className="results-header"><Logo /><span className="completed-pill"><Check size={14} /> DUELO COMPLETADO</span></header><section className="results-content"><div className="results-title"><span className="eyebrow"><Sparkles size={15} /> RESULTADO FINAL</span><h1>{tie ? '¡Empate de titanes!' : '¡Tenemos un ganador!'}</h1><p>{tie ? 'Ambos demostraron tener un pulso extraordinario.' : 'El conocimiento y la rapidez hicieron la diferencia.'}</p></div>{tie ? <div className="tie-layout">{players.map((player, index) => <ResultCard key={player.name} player={player} isWinner index={index} />)}<div className="tie-badge"><Zap size={22} fill="currentColor" /> VS <Zap size={22} fill="currentColor" /></div></div> : <div className="winner-layout"><ResultCard player={winner!} isWinner index={players.indexOf(winner!)} /><div className="versus-result"><span>VS</span><div className="result-line"></div><Heart size={23} fill="currentColor" /></div><ResultCard player={loser!} isWinner={false} index={players.indexOf(loser!)} /></div>}<div className="result-actions"><button className="primary-button" onClick={onRematch}><RotateCcw size={18} /> Jugar revancha</button><button className="secondary-button" onClick={onReset}>Cambiar jugadores / inicio</button></div></section><footer className="results-footer"><Heart size={14} fill="currentColor" /> Gracias por aprender algo que puede salvar vidas</footer></main>;
+  useEffect(() => {
+    const colors = ['#fbbf24', '#ee3445', '#ffffff', '#1e8791', '#ff7b54'];
+    const finishAt = Date.now() + 3600;
+    const launch = () => {
+      if (Date.now() > finishAt) return;
+      void confetti({ particleCount: 24, angle: 62, spread: 48, startVelocity: 48, origin: { x: 0.04, y: 0.94 }, colors });
+      void confetti({ particleCount: 24, angle: 118, spread: 48, startVelocity: 48, origin: { x: 0.96, y: 0.94 }, colors });
+    };
+    launch();
+    const interval = window.setInterval(launch, 360);
+    return () => window.clearInterval(interval);
+  }, []);
+  return <main className="results-page"><div className="result-glow"></div><div className="result-stars" aria-hidden="true"><span>+</span><span>✦</span><span>+</span><span>✦</span></div><header className="results-header"><Logo /><span className="completed-pill"><Check size={14} /> DUELO COMPLETADO</span></header><section className="results-content"><div className="results-title"><span className="eyebrow"><Sparkles size={15} /> ESTACIÓN 3 · PULSO A PULSO</span><h1 className="animate__animated animate__pulse animate__infinite">¡FIN DEL DUELO!</h1><p>{tie ? 'Dos leyendas, un mismo pulso extraordinario.' : 'El conocimiento y la rapidez hicieron la diferencia.'}</p></div>{tie ? <div className="tie-layout">{players.map((player, index) => <ResultCard key={player.name} player={player} isWinner index={index} />)}<div className="tie-badge"><Zap size={22} fill="currentColor" /> EMPATE <Zap size={22} fill="currentColor" /></div></div> : <div className="winner-layout"><ResultCard player={winner!} isWinner index={players.indexOf(winner!)} /><div className="versus-result"><span>VS</span><div className="result-line"></div><Heart size={23} fill="currentColor" /></div><ResultCard player={loser!} isWinner={false} index={players.indexOf(loser!)} /></div>}<div className="result-actions"><button className="primary-button rematch-button" onClick={onRematch}><RotateCcw size={21} /> Jugar revancha</button><button className="secondary-button change-button" onClick={onReset}>Cambiar jugadores / inicio</button></div></section><footer className="results-footer"><Heart size={14} fill="currentColor" /> Gracias por aprender algo que puede salvar vidas</footer></main>;
 }
 
 function ResultCard({ player, isWinner, index }: { player: Player; isWinner: boolean; index: number }) {
-  return <article className={`result-card ${isWinner ? 'winner-card' : 'loser-card'}`}><div className="result-card-top"><span className="result-label">{isWinner ? <><Trophy size={16} /> GANADOR</> : <><Heart size={16} /> DERROTADO</>}</span><span>JUGADOR 0{index + 1}</span></div><div className={`result-medal ${isWinner ? '' : 'sad-medal'}`}>{isWinner ? <Trophy size={52} /> : <Heart size={45} />}</div><h2>{player.name}</h2><div className="final-score"><strong>{player.score}</strong><span>puntos</span></div>{isWinner && <div className="winner-shine"><Sparkles size={14} /> ¡Pulso imparable!</div>}</article>;
+  return <article className={`result-card ${isWinner ? 'winner-card' : 'loser-card'} ${isWinner ? 'animate__animated animate__bounceIn' : 'animate__animated animate__shakeY'}`}><div className="laurel laurel-left">❮</div><div className="laurel laurel-right">❯</div><div className="result-card-top"><span className="result-label">{isWinner ? <><Trophy size={16} /> GANADOR</> : <><Heart size={16} /> DERROTADO</>}</span><span>JUGADOR 0{index + 1}</span></div>{isWinner ? <div className="winner-scene"><div className="crown"><Crown size={28} fill="currentColor" /></div><div className="result-drop happy-drop"><div className="drop-face"><span></span><span></span><b>⌣</b></div><i className="drop-arm left"></i><i className="drop-arm right"></i><i className="drop-leg left"></i><i className="drop-leg right"></i></div><Trophy className="giant-trophy animate__animated animate__tada animate__infinite" size={70} fill="currentColor" /></div> : <div className="loser-scene"><Cloud className="sad-cloud cloud-one" size={38} fill="currentColor" /><Cloud className="sad-cloud cloud-two" size={27} fill="currentColor" /><div className="result-drop dizzy-drop"><div className="spiral-eyes"><span>＠</span><span>＠</span></div><i className="drop-arm left"></i><i className="drop-arm right"></i><div className="bandage"></div></div><div className="defeat-sign">DERROTADO</div></div>}<h2>{isWinner ? `🏆 ${player.name.toUpperCase()} GANA EL DUELO!` : player.name}</h2>{isWinner ? <div className="rainbow-banner">¡Cazador experto de mitos! 🩸✨</div> : <><div className="final-score"><strong>{player.score}</strong><span>puntos</span></div><div className="loser-caption">¡Te faltaron glóbulos rojos! 😢</div></>}</article>;
 }
 
 function App() {
