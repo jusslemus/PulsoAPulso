@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { StrictMode, useCallback, useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft, ArrowRight, Award, Check, Clock3, Heart, Info, RotateCcw,
@@ -119,4 +120,8 @@ function App() {
   return view === 'setup' ? <SetupView onStart={startGame} /> : view === 'game' ? <GameView players={players} seconds={seconds} onFinish={(finalPlayers) => { setPlayers(finalPlayers); setView('results'); }} onBack={() => setView('setup')} /> : <ResultsView players={players} onRematch={() => { setPlayers(players.map((player) => ({ ...player, score: 0 }))); setView('game'); }} onReset={() => setView('setup')} />;
 }
 
-export default App;
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
