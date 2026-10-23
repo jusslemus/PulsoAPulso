@@ -1,5 +1,6 @@
 import { StrictMode, useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import confetti from 'canvas-confetti';
 import {
   ArrowLeft, ArrowRight, Award, Check, Clock3, Heart, Info, RotateCcw,
   Sparkles, UserRound, X, Zap,
@@ -103,17 +104,19 @@ function ResultsView({ players, onRematch, onReset }: { players: Player[]; onRem
   const tie = players[0].score === players[1].score;
   const winner = tie ? null : players[0].score > players[1].score ? players[0] : players[1];
   const loser = tie ? null : players[0].score > players[1].score ? players[1] : players[0];
-  return <main className="results-page"><header className="results-header"><Logo /><div className="results-header-right"><span className="completed-pill"><Check size={14} /> DUELO COMPLETADO</span><img className="university-logo" src="/images/image copy.png" alt="Universidad Nacional de Santa Ana" /></div></header><section className="results-content"><div className="results-title"><span className="eyebrow"><Sparkles size={15} /> ESTACIÓN 3 · PULSO A PULSO</span><h1>¡FIN DEL DUELO!</h1><p>Dos leyendas, un mismo pulso extraordinario.</p></div>{tie ? <div className="tie-layout">{players.map((player, index) => <ResultCard key={player.name} player={player} status="tie" index={index} />)}<div className="tie-badge">EMPATE</div></div> : <div className="winner-layout"><ResultCard player={winner!} status="winner" index={players.indexOf(winner!)} /><div className="versus-result"><span>VS</span></div><ResultCard player={loser!} status="loser" index={players.indexOf(loser!)} /></div>}<div className="result-actions"><button className="flat-button flat-rematch" onClick={onRematch}><RotateCcw size={19} /> Jugar revancha</button><button className="flat-button flat-change" onClick={onReset}>Cambiar jugadores / Inicio</button></div></section><footer className="results-footer"><Heart size={14} fill="currentColor" /> Gracias por aprender algo que puede salvar vidas</footer></main>;
+  useEffect(() => {
+    if (tie) return;
+    void confetti({ particleCount: 120, spread: 70, origin: { y: 0.62 }, colors: ['#f59e0b', '#ef4444', '#10b981', '#ffffff'] });
+  }, [tie]);
+  return <main className="results-page"><header className="results-header"><Logo /><div className="results-header-right"><span className="completed-pill"><Check size={14} /> DUELO COMPLETADO</span><img className="university-logo" src="/images/image copy.png" alt="Universidad Nacional de Santa Ana" /></div></header><section className="results-content"><div className="results-title"><span className="eyebrow"><Sparkles size={15} /> ESTACIÓN 3 · PULSO A PULSO</span><h1>¡FIN DEL DUELO!</h1><p>Dos leyendas, un mismo pulso extraordinario.</p></div>{tie ? <div className="tie-layout">{players.map((player, index) => <ResultCard key={player.name} player={player} status="tie" index={index} />)}</div> : <div className="winner-layout"><ResultCard player={winner!} status="winner" index={players.indexOf(winner!)} /><div className="versus-result"><span>VS</span></div><ResultCard player={loser!} status="loser" index={players.indexOf(loser!)} /></div>}<div className="result-actions"><button className="flat-button flat-rematch" onClick={onRematch}><RotateCcw size={19} /> Jugar revancha</button><button className="flat-button flat-change" onClick={onReset}>Cambiar jugadores / Inicio</button></div></section><footer className="results-footer"><Heart size={14} fill="currentColor" /> Gracias por aprender algo que puede salvar vidas</footer></main>;
 }
 
 type CardStatus = 'winner' | 'loser' | 'tie';
 
 function ResultCard({ player, status, index }: { player: Player; status: CardStatus; index: number }) {
-  return <article className={`result-card result-${status}`}><div className="result-card-top"><span className={`result-label result-label-${status}`}>{status === 'winner' ? '¡GANADOR!' : status === 'loser' ? 'SEGUNDO LUGAR' : 'EMPATE'}</span><span>JUGADOR 0{index + 1}</span></div><div className={`drop-scene drop-scene-${status}`}><ResultDrop status={status} /></div><h2>{player.name} <span className="result-score-inline">{player.score} pts</span></h2><div className={`result-tag result-tag-${status}`}>{status === 'winner' ? '¡Cazador experto de mitos! 🩸' : status === 'loser' ? '¡Buen intento! 👏' : '¡Pulso parejo! 🤝'}</div></article>;
-}
-
-function ResultDrop({ status }: { status: CardStatus }) {
-  return <div className={`flat-drop flat-drop-${status}`} aria-hidden="true">{status === 'winner' && <div className="flat-crown">♔</div>}<div className="drop-body"><div className="drop-eyes"><span></span><span></span></div><div className="drop-mouth">{status === 'winner' ? '⌣' : status === 'loser' ? '⌒' : '—'}</div>{status === 'loser' && <div className="flat-bandage"></div>}</div>{status === 'winner' && <div className="flat-trophy">🏆</div>}</div>;
+  const isWinner = status === 'winner';
+  const isTie = status === 'tie';
+  return <article className={`result-card result-${status}`}><div className="result-card-top"><span className={`result-label result-label-${status}`}>{isWinner ? '¡GANADOR!' : isTie ? '👑 ¡EMPATE ÉPICO!' : 'DERROTADO'}</span><span>JUGADOR 0{index + 1}</span></div><div className="result-emoji" aria-hidden="true">{isWinner ? '🏆' : isTie ? '👑' : '💀'}</div><h2>{player.name}</h2><strong className="result-score">{player.score} <span>pts</span></strong><div className={`result-tag result-tag-${status}`}>{isWinner ? '¡Cazador experto de mitos! 🩸✨' : isTie ? '¡EMPATE ÉPICO!' : '¡Te faltaron glóbulos rojos! 😢'}</div></article>;
 }
 
 function App() {
