@@ -116,7 +116,12 @@ type CardStatus = 'winner' | 'loser' | 'tie';
 function ResultCard({ player, status, index }: { player: Player; status: CardStatus; index: number }) {
   const isWinner = status === 'winner';
   const isTie = status === 'tie';
-  return <article className={`result-card result-${status}`}><div className="result-card-top"><span className={`result-label result-label-${status}`}>{isWinner ? '¡GANADOR!' : isTie ? '👑 ¡EMPATE ÉPICO!' : 'DERROTADO'}</span><span>JUGADOR 0{index + 1}</span></div><div className="result-emoji" aria-hidden="true">{isWinner ? '🏆' : isTie ? '👑' : '💀'}</div><h2>{player.name}</h2><strong className="result-score">{player.score} <span>pts</span></strong><div className={`result-tag result-tag-${status}`}>{isWinner ? '¡Cazador experto de mitos! 🩸✨' : isTie ? '¡EMPATE ÉPICO!' : '¡Te faltaron glóbulos rojos! 😢'}</div></article>;
+  return <article className={`result-card result-${status}`}><div className="result-card-top"><span className={`result-label result-label-${status}`}>{isWinner ? '¡GANADOR!' : isTie ? '👑 ¡EMPATE ÉPICO!' : 'DERROTADO'}</span><span>JUGADOR 0{index + 1}</span></div><div className={`drop-scene drop-scene-${status}`}><ResultDrop status={status} /></div><h2>{player.name}</h2><strong className="result-score">{player.score} <span>pts</span></strong><div className={`result-tag result-tag-${status}`}>{isWinner ? '¡Cazador experto de mitos! 🩸✨' : isTie ? '¡EMPATE ÉPICO!' : '¡Te faltaron glóbulos rojos! 😢'}</div></article>;
+}
+
+function ResultDrop({ status }: { status: CardStatus }) {
+  if (status === 'tie') return <div className="tie-crown" aria-hidden="true">♛</div>;
+  return <div className={`flat-drop flat-drop-${status}`} aria-hidden="true">{status === 'winner' && <div className="flat-crown">♔</div>}<div className="drop-body"><div className="drop-eyes"><span></span><span></span></div><div className="drop-mouth">{status === 'winner' ? '⌣' : '⌒'}</div>{status === 'loser' && <div className="flat-bandage"></div>}</div>{status === 'winner' && <Award className="flat-trophy" size={42} strokeWidth={2.5} aria-hidden="true" />}</div>;
 }
 
 function App() {
