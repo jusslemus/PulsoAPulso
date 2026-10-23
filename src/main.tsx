@@ -44,7 +44,7 @@ function SetupView({ onStart }: { onStart: (one: string, two: string, seconds: n
   const canStart = one.trim().length > 0 && two.trim().length > 0;
   return <main className="setup-page">
     <div className="ambient ambient-one"></div><div className="ambient ambient-two"></div>
-    <header className="topbar setup-topbar"><Logo /><div className="station-pill"><span>ESTACIÓN 3</span><b>DUEL0 DE SABER</b></div></header>
+    <header className="topbar setup-topbar"><Logo /><div className="setup-header-right"><div className="station-pill"><span>ESTACIÓN 3</span><b>DUEL0 DE SABER</b></div><img className="university-logo" src="/images/image copy.png" alt="Universidad Nacional de Santa Ana" /></div></header>
     <section className="setup-layout">
       <div className="hero-copy">
         <div className="eyebrow"><Sparkles size={15} /> APRENDE. JUEGA. SALVA VIDAS.</div>
